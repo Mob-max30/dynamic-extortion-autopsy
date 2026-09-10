@@ -1,178 +1,181 @@
-"""
-Dynamic Extortion Autopsy
-Dataset Generator for Bangalore Ride Pricing Forensics
-
-Synthesizes high fidelity ride telemetry bridging physical road conditions
-with predatory pricing triggers like battery drain and app refresh frequency.
-"""
-
-import numpy as np
 import pandas as pd
+import numpy as np
+import os
+import uuid
+from datetime import datetime, timedelta
 
+def generate_hybrid_pricing_data(n_rows=35000):
+    """
+    Generates a 21-dimensional hybrid-synthetic dataset for Bangalore ride-hailing forensics.
+    Utilizes pure vectorized NumPy array operations to simulate complex physical logistics
+    and algorithmic behavioral pricing (digital telemetry exploitation).
+    """
+    
+    # 1. INITIALIZATION & SEEDING
+    # Setting seed ensures the random distributions remain reproducible across different machines
+    np.random.seed(42)
+    print(f"Initializing data synthesis for {n_rows} ride queries...")
+    
+    # 2. GEOSPATIAL & TEMPORAL BASELINE
+    hubs = [
+        'Whitefield', 'Koramangala', 'Indiranagar', 'Electronic_City', 
+        'HSR_Layout', 'Bellandur', 'Marathahalli', 'Peenya', 'Hebbal', 'Malleshwaram'
+    ]
+    pickup_hubs = np.random.choice(hubs, n_rows)
+    drop_hubs = np.random.choice(hubs, n_rows)
 
-def generate_ride_forensics_dataset(n_samples=50000, random_seed=42):
-    np.random.seed(random_seed)
+    # Vectorized cleanup: Prevent pickup and drop from being the exact same hub
+    mask = pickup_hubs == drop_hubs
+    drop_hubs[mask] = np.roll(drop_hubs, 1)[mask]
 
-    # Spatial and Temporal Features
-    locations = np.array([
-        "Koramangala", "Indiranagar", "Whitefield", "Electronic City",
-        "HSR Layout", "Bellandur", "Marathahalli", "MG Road", "Hebbal", "JP Nagar"
-    ])
-    pickup_locations = locations[np.random.randint(0, len(locations), size=n_samples)]
-    drop_locations = locations[np.random.randint(0, len(locations), size=n_samples)]
+    # Distance generation using a Gamma distribution for organic, right-skewed realistic distances
+    distances = np.round(np.random.gamma(shape=3.0, scale=3.5, size=n_rows) + 1.5, 1)
+    distances = np.clip(distances, 2.0, 35.0)
 
-    hour_of_day = np.random.randint(0, 24, size=n_samples)
-    is_peak_hour = np.where(
-        ((hour_of_day >= 8) & (hour_of_day <= 11)) | ((hour_of_day >= 17) & (hour_of_day <= 21)),
-        1,
-        0
+    # Time distribution (Bimodal: peaking at morning office hours and evening rush)
+    hour_probabilities = [0.01, 0.01, 0.01, 0.01, 0.02, 0.04, 0.06, 0.07, 0.10, 0.08, 
+                          0.05, 0.04, 0.04, 0.04, 0.04, 0.05, 0.06, 0.09, 0.09, 0.05, 
+                          0.02, 0.01, 0.01, 0.00]
+    
+    hours = np.random.choice(np.arange(24), n_rows, p=hour_probabilities)
+    minutes = np.random.randint(0, 60, n_rows)
+    days = np.random.randint(0, 180, n_rows)
+
+    start_date = np.datetime64('2026-03-01')
+    timestamps = start_date + days.astype('timedelta64[D]') + hours.astype('timedelta64[h]') + minutes.astype('timedelta64[m]')
+    days_of_week = (days + 6) % 7 
+
+    # 3. DYNAMIC PHYSICAL CONSTRAINTS (Traffic & Weather)
+    traffic_conditions = np.where(
+        (hours >= 8) & (hours <= 10) | (hours >= 17) & (hours <= 20), 
+        np.random.choice(['Gridlock', 'Heavy', 'Moderate'], n_rows, p=[0.4, 0.5, 0.1]),
+        np.random.choice(['Moderate', 'Free_Flow', 'Light'], n_rows, p=[0.2, 0.6, 0.2])
     )
 
-    # Physical Environment
-    trip_distance_km = np.round(np.random.uniform(2.0, 35.0, size=n_samples), 2)
-    rainfall_mm = np.round(np.random.exponential(scale=12.0, size=n_samples), 1)
-    is_monsoon_rain = np.where(rainfall_mm > 15.0, 1, 0)
-
-    base_traffic_index = np.random.uniform(1.0, 5.0, size=n_samples)
-    traffic_multiplier = base_traffic_index + (is_peak_hour * 2.5) + (is_monsoon_rain * 2.0)
-    traffic_multiplier = np.clip(traffic_multiplier, 1.0, 10.0)
-
-    # Digital Telemetry and User Desperation Indicators
-    battery_percentage = np.random.beta(a=2.0, b=2.0, size=n_samples) * 100
-    battery_percentage = np.round(np.clip(battery_percentage, 1.0, 100.0), 1)
-    is_critical_battery = np.where(battery_percentage <= 15.0, 1, 0)
-
-    app_reopen_count = np.random.poisson(lam=2.5, size=n_samples)
-    app_reopen_count = np.where(is_critical_battery == 1, app_reopen_count + np.random.poisson(lam=3.0, size=n_samples), app_reopen_count)
-    app_reopen_count = np.clip(app_reopen_count, 1, 25)
-
-    # Device Profiling (0 for Budget, 1 for Midrange, 2 for Premium)
-    device_tier_code = np.random.choice([0, 1, 2], size=n_samples, p=[0.45, 0.35, 0.20])
-    device_tier_names = np.array(["Budget Android", "Midrange Android", "Premium Flagship iPhone"])
-    device_tier = device_tier_names[device_tier_code]
-
-    # Baseline Financial Calculations
-    base_fare_inr = 50.0 + (trip_distance_km * 14.5)
-
-    # Physical Demand Surge
-    traffic_surge = 1.0 + (traffic_multiplier * 0.12)
-    weather_surge = 1.0 + (is_monsoon_rain * 0.35)
-
-    # Algorithmic Predatory Markup Factors
-    # Battery exploitation: Lower battery unlocks steeper pricing penalty
-    battery_desperation_factor = np.where(
-        battery_percentage <= 10.0,
-        0.45,
-        np.where(
-            battery_percentage <= 20.0,
-            0.25,
-            0.0
-        )
+    weather = np.random.choice(
+        ['Clear', 'Light_Rain', 'Heavy_Downpour', 'Thunderstorm'], 
+        n_rows, 
+        p=[0.75, 0.15, 0.08, 0.02]
     )
 
-    # Reopen exploitation: Repeated searching signals captive demand
-    reopen_desperation_factor = np.clip((app_reopen_count - 2) * 0.04, 0.0, 0.40)
+    # Calculating time penalties based on physical constraints
+    traffic_penalties = np.where(traffic_conditions == 'Gridlock', 4.5,
+                        np.where(traffic_conditions == 'Heavy', 3.0,
+                        np.where(traffic_conditions == 'Moderate', 1.5, 0.0)))
+    
+    rain_penalties = np.where(weather == 'Heavy_Downpour', 2.0,
+                     np.where(weather == 'Thunderstorm', 3.5, 0.0))
 
-    # Device tier markup: Hardware profiling penalty
-    device_markup_factor = np.where(
-        device_tier_code == 2,
-        0.30,
-        np.where(
-            device_tier_code == 1,
-            0.10,
-            0.0
-        )
-    )
+    # Base duration calculation with organic statistical noise added
+    ride_duration_min = np.round((distances * 3.0) + (distances * traffic_penalties) + (distances * rain_penalties) + np.random.normal(0, 3, n_rows))
+    ride_duration_min = np.clip(ride_duration_min, 5, 180).astype(int)
 
-    # Total Multiplier
-    predatory_multiplier = 1.0 + battery_desperation_factor + reopen_desperation_factor + device_markup_factor
-    physical_multiplier = traffic_surge * weather_surge
-    total_surge_multiplier = np.round(physical_multiplier * predatory_multiplier, 2)
-    total_surge_multiplier = np.clip(total_surge_multiplier, 1.0, 5.0)
+    # 4. DIGITAL TELEMETRY (User & Device Profiling)
+    device_os = np.random.choice(['iOS', 'Android'], n_rows, p=[0.35, 0.65])
+    
+    # Nested conditional to assign device tiers logically based on OS
+    device_tier = np.where(device_os == 'iOS', 
+                           np.random.choice(['Premium', 'Mid_Range'], n_rows, p=[0.8, 0.2]),
+                           np.random.choice(['Premium', 'Mid_Range', 'Budget'], n_rows, p=[0.2, 0.5, 0.3]))
 
-    quoted_fare_inr = np.round(base_fare_inr * total_surge_multiplier, 2)
-    algorithmic_markup_inr = np.round(quoted_fare_inr - (base_fare_inr * physical_multiplier), 2)
-    algorithmic_markup_inr = np.clip(algorithmic_markup_inr, 0.0, None)
+    battery_pct = np.random.randint(1, 101, n_rows)
+    
+    # App open counts spike dynamically if the user is stuck in bad traffic or rain (Poisson distribution)
+    app_open_count = np.where((traffic_conditions == 'Gridlock') | (weather == 'Heavy_Downpour'),
+                              np.random.poisson(lam=4, size=n_rows) + 1,
+                              np.random.poisson(lam=1.5, size=n_rows) + 1)
+    
+    account_tenure_months = np.random.randint(1, 48, n_rows)
+    
+    # Historical elasticity: Older accounts are modeled to be slightly more tolerant of surges
+    historical_acceptance = np.clip(np.random.normal(0.6, 0.2, n_rows) + (account_tenure_months * 0.005), 0.1, 0.9)
 
-    # Ride Status Simulation
-    status_codes = np.array(["Completed", "Cancelled by Driver", "Cancelled by User", "Timeout"])
-    cancellation_risk = (
-        (quoted_fare_inr / base_fare_inr) * 0.15 +
-        (traffic_multiplier * 0.05) +
-        (is_critical_battery * 0.10)
-    )
-    cancellation_risk = np.clip(cancellation_risk, 0.05, 0.85)
+    # 5. THE ALGORITHMIC PRICING ENGINE (Vectorized Logic)
+    print("Applying vectorized pricing algorithms and behavioral surcharges...")
+    legal_meter = 30.0 + np.maximum(0, (distances - 2.0) * 15.0)
 
-    random_uniform = np.random.uniform(0.0, 1.0, size=n_samples)
-    ride_status_indices = np.where(
-        random_uniform < (1.0 - cancellation_risk),
-        0,
-        np.where(
-            random_uniform < (1.0 - (cancellation_risk * 0.5)),
-            1,
-            np.where(
-                random_uniform < (1.0 - (cancellation_risk * 0.2)),
-                2,
-                3
-            )
-        )
-    )
-    ride_status = status_codes[ride_status_indices]
+    algo_multiplier = np.ones(n_rows)
+    
+    # Stacking physical environment surcharges
+    algo_multiplier += np.where(traffic_conditions == 'Gridlock', 0.45, 0)
+    algo_multiplier += np.where(traffic_conditions == 'Heavy', 0.25, 0)
+    algo_multiplier += np.where(weather == 'Thunderstorm', 0.80, 0)
+    algo_multiplier += np.where(weather == 'Heavy_Downpour', 0.50, 0)
+    
+    # Stacking digital telemetry and profiling surcharges
+    algo_multiplier += np.where(device_tier == 'Premium', 0.12, 0)
+    algo_multiplier -= np.where(device_tier == 'Budget', 0.08, 0)
+    algo_multiplier += np.where((battery_pct <= 15) & (app_open_count > 3), 0.35, 0) 
+    algo_multiplier += np.where(historical_acceptance > 0.75, 0.10, 0) 
 
-    dataset = pd.DataFrame({
-        "trip_id": np.arange(100001, 100001 + n_samples),
-        "pickup_location": pickup_locations,
-        "drop_location": drop_locations,
-        "hour_of_day": hour_of_day,
-        "is_peak_hour": is_peak_hour,
-        "trip_distance_km": trip_distance_km,
-        "rainfall_mm": rainfall_mm,
-        "is_monsoon_rain": is_monsoon_rain,
-        "traffic_multiplier": np.round(traffic_multiplier, 2),
-        "battery_percentage": battery_percentage,
-        "is_critical_battery": is_critical_battery,
-        "app_reopen_count": app_reopen_count,
-        "device_tier": device_tier,
-        "base_fare_inr": np.round(base_fare_inr, 2),
-        "total_surge_multiplier": total_surge_multiplier,
-        "quoted_fare_inr": quoted_fare_inr,
-        "algorithmic_markup_inr": algorithmic_markup_inr,
-        "ride_status": ride_status
+    # Adding continuous normal noise to prevent perfectly flat chart lines in EDA
+    algo_multiplier *= np.random.normal(1.0, 0.05, n_rows)
+    algo_multiplier = np.clip(algo_multiplier, 0.9, 3.5)
+    
+    app_quoted_fare = np.round(legal_meter * algo_multiplier, 0)
+    competitor_diff = np.round(np.random.normal(0, 20, n_rows), 0) 
+
+    # 6. MARKET CHURN SIMULATION (User & Driver Behavior)
+    # User acceptance probability drops if surge is high, unless desperate
+    prob_accept = 0.8 - (algo_multiplier * 0.15) 
+    prob_accept += np.where(battery_pct <= 15, 0.25, 0)
+    prob_accept += np.where(weather == 'Heavy_Downpour', 0.20, 0)
+    prob_accept += np.where(competitor_diff > 30, 0.20, 0) 
+    prob_accept = np.clip(prob_accept, 0.05, 0.95)
+
+    # Driver cancellation probability spikes for short distances in massive gridlock
+    prob_cancel = np.where((distances < 5.0) & (traffic_conditions == 'Gridlock'), 0.60, 0.10)
+    
+    random_draw = np.random.rand(n_rows)
+    final_status = np.where(random_draw < prob_accept,
+                            np.where(np.random.rand(n_rows) < prob_cancel, 'Cancelled_By_Driver', 'Ride_Accepted'),
+                            'User_Abandoned_App')
+
+    # 7. ASSEMBLE DATAFRAME
+    df = pd.DataFrame({
+        'Query_ID': [str(uuid.uuid4())[:8] for _ in range(n_rows)],
+        'Query_Timestamp': timestamps,
+        'Day_of_Week': days_of_week,
+        'Hour_of_Day': hours,
+        'Pickup_Hub': pickup_hubs,
+        'Drop_Hub': drop_hubs,
+        'Base_Distance_KM': distances,
+        'Est_Ride_Duration_Min': ride_duration_min,
+        'Traffic_Condition': traffic_conditions,
+        'Weather_Condition': weather,
+        'User_Device_OS': device_os,
+        'Device_Model_Tier': device_tier,
+        'Battery_Level_Pct': battery_pct,
+        'App_Open_Count_Last_1hr': app_open_count,
+        'User_Account_Tenure_Months': account_tenure_months,
+        'Historical_Acceptance_Rate': np.round(historical_acceptance, 2),
+        'Legal_Meter_Fare_INR': legal_meter,
+        'Surge_Multiplier_Applied': np.round(algo_multiplier, 2),
+        'App_Quoted_Fare_INR': app_quoted_fare,
+        'Competitor_Price_Diff_INR': competitor_diff,
+        'Final_Ride_Status': final_status
     })
 
-    return dataset
+    # 8. EXPORT TO CSV
+    output_filename = 'Bangalore_Advanced_Ride_Forensics.csv'
+    df.to_csv(output_filename, index=False)
+    file_size_mb = os.path.getsize(output_filename) / (1024 * 1024)
+    print(f"Success! Dataset exported as {output_filename} ({file_size_mb:.2f} MB)")
 
+    # 9. STATISTICAL PROOF OUTPUT
+    df['Algorithmic_Markup_INR'] = df['App_Quoted_Fare_INR'] - df['Legal_Meter_Fare_INR']
+    critical_battery = df[df['Battery_Level_Pct'] <= 15]['Algorithmic_Markup_INR']
+    safe_battery = df[df['Battery_Level_Pct'] > 15]['Algorithmic_Markup_INR']
+
+    print("\n" + "="*45)
+    print("   ALGORITHMIC SURGE FORENSICS (PROOF)")
+    print("="*45)
+    print(f"Average Extra Markup (Safe Battery):     {safe_battery.mean():.2f} INR")
+    print(f"Average Extra Markup (Critical Battery): {critical_battery.mean():.2f} INR")
+    print("-" * 45)
+    print(f"Markup Variance (Critical Battery):      {critical_battery.var():.2f}")
+    print(f"Standard Deviation (Critical Battery):   {critical_battery.std():.2f}")
+    print("="*45 + "\n")
 
 if __name__ == "__main__":
-    df = generate_ride_forensics_dataset(n_samples=50000)
-    
-    # Save output for forensics verification
-    output_path = "data/Bangalore_Advanced_Ride_Forensics_2.csv"
-    df.to_csv(output_path, index=False)
-    print(f"Synthesized dataset saved to: {output_path}")
-    
-    # Critical vs Safe battery statistical analysis
-    critical_group = df[df["is_critical_battery"] == 1]["algorithmic_markup_inr"]
-    safe_group = df[df["is_critical_battery"] == 0]["algorithmic_markup_inr"]
-
-    mean_critical = critical_group.mean()
-    var_critical = critical_group.var()
-    std_critical = critical_group.std()
-
-    mean_safe = safe_group.mean()
-    var_safe = safe_group.var()
-    std_safe = safe_group.std()
-
-    print("=" * 70)
-    print("ALGORITHMIC SURGE MARKUP STATISTICAL ANALYSIS")
-    print("=" * 70)
-    print("Group: Critical Battery Level (<= 15%)")
-    print(f"  Mean Algorithmic Markup:    INR {mean_critical:.2f}")
-    print(f"  Variance:                   {var_critical:.2f}")
-    print(f"  Standard Deviation:         INR {std_critical:.2f}")
-    print("=" * 70)
-    print("Group: Safe Battery Level (> 15%)")
-    print(f"  Mean Algorithmic Markup:    INR {mean_safe:.2f}")
-    print(f"  Variance:                   {var_safe:.2f}")
-    print(f"  Standard Deviation:         INR {std_safe:.2f}")
-    print("=" * 70)
+    generate_hybrid_pricing_data()

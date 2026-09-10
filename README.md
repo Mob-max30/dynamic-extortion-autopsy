@@ -93,6 +93,17 @@ You can explore the data and run the code on your own machine by following these
 3. Run the dataset generator script in the scripts directory to produce fresh simulation data.
 4. Launch Jupyter and open the exploratory notebook in the notebooks directory to interact with the analysis and charts.
 
+### Scientific Basis and Authenticity
+
+The mathematical rules and behavioral multipliers implemented in this forensic simulation are grounded in documented industry disclosures, independent empirical investigations, and foundational economic theory:
+
+* The 2016 Battery Admission: Keith Chen, the former Head of Economic Research at Uber, revealed on the NPR podcast Hidden Brain that the company knows users with dying batteries are statistically more willing to accept high surge pricing. Reference report: [https://www.engadget.com/2016-05-20-uber-surge-pricing-battery-life.html](https://www.engadget.com/2016-05-20-uber-surge-pricing-battery-life.html).
+
+* The 2023 Brussels Investigation: A study conducted by the Belgian newspaper Dernière Heure found that two identical ride requests made simultaneously resulted in a six percent higher charge for the smartphone with twelve percent battery remaining compared to the phone with eighty four percent battery. Reference report: [https://www.vice.com/en/article/uber-surge-pricing-phone-battery/](https://www.vice.com/en/article/uber-surge-pricing-phone-battery/).
+
+* Algorithmic Price Discrimination: This pricing model reflects first degree price discrimination in microeconomics, where platforms charge the absolute maximum an individual is willing to pay based on situational vulnerability and urgent necessity.
+
+
 ### Project Purpose and Community Goal
 
 Dynamic Extortion Autopsy is an independent open source project dedicated to digital consumer rights, fair tech practices, and algorithmic transparency. 

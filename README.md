@@ -55,21 +55,22 @@ To overcome this roadblock, this project builds a realistic hybrid forensic data
 
 ### How The Telemetry and Pricing Model Works
 
-The dataset generator creates fifty thousand simulated ride requests across primary Bangalore tech hubs, including Koramangala, Indiranagar, Whitefield, Bellandur, and Electronic City.
+The dataset generator synthesizes thirty five thousand simulated ride queries across twenty one dimensions. The journeys span ten primary Bangalore transport hubs: Whitefield, Koramangala, Indiranagar, Electronic City, HSR Layout, Bellandur, Marathahalli, Peenya, Hebbal, and Malleshwaram.
 
 The pricing engine operates through several clear layers:
 
-* Baseline Physical Cost: The regular fare based on total trip distance and travel duration.
-* Traffic and Weather Surge: Standard fare increases caused by heavy road congestion and monsoon downpours.
-* Battery Level Penalty: An extra price markup triggered when battery drops below fifteen percent, knowing the rider cannot afford to wait.
-* Refresh Frequency Penalty: An added price jump when a user repeatedly reopens the app, signaling urgent need.
-* Device Hardware Penalty: An additional markup applied to expensive flagship devices based on estimated purchasing power.
+* Baseline Legal Meter Fare: The standard distance fare calculated using realistic travel distributions.
+* Traffic and Weather Conditions: Dynamic surcharges stacked for gridlock congestion, heavy traffic, monsoon downpours, and thunderstorms.
+* Critical Battery and App Refresh Triggers: Substantial markups applied when battery percentage drops to fifteen percent or lower alongside frequent app reopenings.
+* Device Profiling and Operating System: Premium device tier markups and budget tier adjustments across mobile platforms.
+* Account History and Price Elasticity: Account tenure and historical acceptance rates factoring into willingness to pay.
+* Market Churn Simulation: Tracking whether a trip is accepted, abandoned by the commuter due to surge pricing, or cancelled by the driver during severe gridlock.
 
 ### Repository Structure
 
 This repository is organized into clean, dedicated modules:
 
-* data: Stores the primary forensic dataset containing fifty thousand ride records with complete physical and digital attributes.
+* data: Stores the primary twenty one dimensional forensic dataset containing thirty five thousand ride records with complete physical and digital telemetry attributes.
 * scripts: Contains the Python data generator script built using fast vectorized calculations with NumPy and Pandas.
 * notebooks: Contains the Jupyter notebook performing full exploratory data analysis, statistical calculations, and visual charts.
 

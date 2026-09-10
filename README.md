@@ -2,29 +2,98 @@
 
 ## Forensic Reverse Engineering of Algorithmic Price Discrimination in Bangalore Mobility Platforms
 
-Every commuter in Bangalore has experienced the exact same sinking feeling. You stand under a dripping awning at Silk Board junction or along the outer ring road during a ferocious evening monsoon downpour. Water cascades down the roadway, traffic stalls into an endless sea of red taillights, and your smartphone battery indicator drops below ten percent. You open your preferred ride hailing application to book a cab home. The quote appears on screen, displaying an exorbitant fourfold surge markup. You close the app, wait two minutes, reopen it in desperate hope of a fairer quote, only to watch the fare climb even higher.
+### The Commuter Nightmare
 
-For years, technology platforms have insisted that dynamic pricing engines are simple economic balancers reflecting pure supply and demand. They tell the public that prices rise only because many people want rides while few drivers are available on congested roads. Yet everyday observations tell a far more sinister story. If you compare quotes side by side with a colleague standing right next to you heading to the same destination, the prices rarely match. The user holding a flagship phone with single digit battery life routinely receives a significantly higher quote than someone holding an inexpensive device with a full charge. What rideshare platforms describe as efficient market clearing begins to look suspiciously like weaponized desperation.
+Every commuter in Bangalore knows this exact situation all too well. 
 
-This project exists to transform an unspoken public suspicion into rigorous mathematical proof. We all intuitively feel exploited when our devices are dying and we have no alternative transit options, but intuition alone cannot hold opaque algorithms accountable. By dissecting the underlying digital mechanics, Dynamic Extortion Autopsy shines a bright light on the covert data points harvested by modern mobile applications. Your battery percentage, the rapid frequency with which you switch between ride apps, and even the retail value of your smartphone hardware are treated not as passive diagnostic metrics, but as high value signals of consumer elasticity and distress.
+You stand under a small shop roof at Silk Board junction or along the outer ring road while heavy evening rain pours down. The roads turn into waterlogged rivers, traffic freezes in every direction, and your phone battery suddenly flashes a low power warning below ten percent. 
 
-Commercial ride hailing platforms guard their proprietary pricing dispatch algorithms behind strict corporate secrecy, encrypted application binaries, and private server clusters. Because these production engines remain locked away as corporate trade secrets, direct code inspection is impossible. To overcome this obstacle, this project develops a hybrid synthetic forensic dataset. This architecture fuses authentic physical constraints of Bangalore, including known bottleneck corridors, live traffic congestion multipliers, and torrential monsoon rainfall patterns, with digital user profiling telemetry.
+Here is what happens next:
 
-The data generation engine models fifty thousand simulated ride requests across primary tech corridors such as Koramangala, Indiranagar, Whitefield, Bellandur, and Electronic City. Rather than relying on simple linear formulas, the system calculates price surges through multi variable interactions. Physical road delays establish the baseline multiplier, while digital desperation triggers introduce predatory markups. A commuter with a battery level below fifteen percent suffers an immediate pricing penalty. Rapid app reopening events indicate captive demand, compounding the final quote. Hardware profiling further stratifies users, penalizing premium smartphone owners who are algorithmically assumed to possess higher purchasing tolerance.
+* You open your ride hailing app to book a cab or auto rickshaw to get home.
+* The screen quotes a price that is three or four times the normal rate.
+* You close the app and wait a couple of minutes, hoping the price might cool down.
+* You reopen the app, only to discover that the price has climbed even higher.
 
-The repository is structured into modular components designed for reproducible analysis:
+### The Official Story vs The Hidden Reality
 
-* data: Houses the primary forensic dataset detailing ride sessions, physical weather indicators, battery states, device categories, and price markups.
-* scripts: Contains the pure vectorized dataset generator script that simulates ride records and prints baseline statistical moments across battery cohorts.
-* notebooks: Contains the complete exploratory data analysis notebook executing variance calculations, ride status distributions, hardware tier violin plots, and desperation correlation matrices.
+Mobility companies have always given the same official explanation to the public:
 
-The empirical analysis reveals a stark divergence in financial outcomes. Commuters trapped in critical battery states face a mean algorithmic markup substantially higher than commuters with abundant charge, accompanied by higher variance in quoted fares. The correlation analysis exposes a strong inverse relationship between battery life and price penalties, alongside a strong positive correlation between rapid app reopenings and sudden price escalation. These findings establish that dynamic pricing in modern mobility apps extends far beyond physical road congestion, actively extracting maximum financial surplus from vulnerable commuters when they need transportation the most.
+* They claim that pricing is purely based on supply and demand.
+* They say fares go up simply because many riders want cabs and few drivers are on the road.
 
-To reproduce the empirical findings locally, execute the following workflow:
+However, real world observations reveal a much deeper story:
 
-1. Clone the repository to your local workstation.
-2. Install the necessary data analysis libraries including pandas, numpy, matplotlib, and seaborn.
-3. Run the dataset generator script located in the scripts folder to synthesize fresh telemetry data.
-4. Launch Jupyter and open the exploratory data analysis notebook located in the notebooks directory to interact with the visualizations and statistical models.
+* Two people standing right next to each other requesting the exact same destination often see completely different prices.
+* A rider with five percent battery gets quoted a higher price than someone with ninety percent battery.
+* A person using a high end flagship phone often sees a higher fare than someone on an inexpensive budget phone.
+* What companies call dynamic pricing looks less like fair market balancing and more like weaponized personal urgency.
 
-Dynamic Extortion Autopsy operates as an independent open source research initiative dedicated to digital consumer rights and algorithmic transparency. By documenting the exact mathematical pathways through which mobile telemetry can be weaponized against commuters, this project aims to foster public dialogue, encourage regulatory scrutiny over algorithmic pricing practices, and empower consumers with clear empirical awareness.
+### Why This Project Matters
+
+This project turns an everyday suspicion into clear mathematical proof.
+
+We all feel frustrated when we sense an app is taking advantage of our low battery or bad weather, but personal feelings alone cannot hold private algorithms accountable. 
+
+Dynamic Extortion Autopsy exposes the hidden digital signals that modern mobility apps can quietly gather:
+
+* Battery Level: Measuring how close your device is to shutting down.
+* App Refresh Count: Tracking how many times you open and close the app in panic.
+* Device Classification: Checking your phone brand and model to estimate your spending capacity.
+
+These data points are not just innocent device statistics. In an unfair pricing system, they become signals of how desperate you are, allowing an algorithm to charge the absolute maximum price you will tolerate.
+
+### The Challenge and Our Investigation Method
+
+Commercial ride hailing algorithms are closely guarded corporate secrets. Their code is locked inside private company servers, making direct inspection impossible for the public.
+
+To overcome this roadblock, this project builds a realistic hybrid forensic dataset:
+
+* Physical Road Realities: We simulate authentic Bangalore conditions, including major traffic bottlenecks, long travel times, and severe monsoon rain.
+* Digital User Profiling: We simulate individual digital behaviors, such as dying batteries, repeated app reopens, and device price tiers.
+* Mathematical Verification: By combining road conditions with user telemetry, we can cleanly separate normal traffic surges from unfair predatory markups.
+
+### How The Telemetry and Pricing Model Works
+
+The dataset generator creates fifty thousand simulated ride requests across primary Bangalore tech hubs, including Koramangala, Indiranagar, Whitefield, Bellandur, and Electronic City.
+
+The pricing engine operates through several clear layers:
+
+* Baseline Physical Cost: The regular fare based on total trip distance and travel duration.
+* Traffic and Weather Surge: Standard fare increases caused by heavy road congestion and monsoon downpours.
+* Battery Level Penalty: An extra price markup triggered when battery drops below fifteen percent, knowing the rider cannot afford to wait.
+* Refresh Frequency Penalty: An added price jump when a user repeatedly reopens the app, signaling urgent need.
+* Device Hardware Penalty: An additional markup applied to expensive flagship devices based on estimated purchasing power.
+
+### Repository Structure
+
+This repository is organized into clean, dedicated modules:
+
+* data: Stores the primary forensic dataset containing fifty thousand ride records with complete physical and digital attributes.
+* scripts: Contains the Python data generator script built using fast vectorized calculations with NumPy and Pandas.
+* notebooks: Contains the Jupyter notebook performing full exploratory data analysis, statistical calculations, and visual charts.
+
+### Key Forensic Discoveries
+
+The numbers demonstrate clear patterns of price discrimination:
+
+* Higher Markups for Dying Phones: Commuters with critical battery levels face a much higher average algorithmic markup compared to riders with plenty of battery life.
+* Wider Price Variance: Low battery sessions show huge unpredictable price swings, maximizing rider stress.
+* Strong Negative Battery Correlation: As battery percentage goes down, the added price markup goes up in a predictable curve.
+* Strong Positive Refresh Correlation: The more frequently you open the app to check prices, the steeper the final quote becomes.
+* Hardware Tier Discrepancy: Flagship phone users consistently receive higher price distributions compared to budget phone users across identical routes.
+
+### How To Run This Investigation Locally
+
+You can explore the data and run the code on your own machine by following these steps:
+
+1. Clone this repository to your local computer.
+2. Install the standard data science libraries including pandas, numpy, matplotlib, and seaborn.
+3. Run the dataset generator script in the scripts directory to produce fresh simulation data.
+4. Launch Jupyter and open the exploratory notebook in the notebooks directory to interact with the analysis and charts.
+
+### Project Purpose and Community Goal
+
+Dynamic Extortion Autopsy is an independent open source project dedicated to digital consumer rights, fair tech practices, and algorithmic transparency. 
+
+By mapping the exact mathematical ways mobile phone data can be used against everyday riders, this project empowers commuters with clear evidence and encourages open discussion on fair pricing standards.

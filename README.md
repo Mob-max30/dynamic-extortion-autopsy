@@ -109,3 +109,30 @@ The mathematical rules and behavioral multipliers implemented in this forensic s
 Dynamic Extortion Autopsy is an independent open source project dedicated to digital consumer rights, fair tech practices, and algorithmic transparency. 
 
 By mapping the exact mathematical ways mobile phone data can be used against everyday riders, this project empowers commuters with clear evidence and encourages open discussion on fair pricing standards.
+
+### Data Dictionary
+
+| Feature Name | Data Type | Description |
+|---|---|---|
+| Query_ID | String | Unique transaction identifier generated for the ride request. |
+| Query_Timestamp | Datetime | The simulated exact date and time the commuter opened the application. |
+| Day_of_Week | Integer | Numeric representation of the day ranging from zero to six. |
+| Hour_of_Day | Integer | The hour the request was made ranging from zero to twenty three. |
+| Pickup_Hub | String | The starting location situated in a major Bengaluru tech corridor. |
+| Drop_Hub | String | The destination location for the trip. |
+| Base_Distance_KM | Float | The physical distance of the journey calculated in kilometers. |
+| Est_Ride_Duration_Min | Integer | The calculated travel time factoring in live traffic and weather conditions. |
+| Traffic_Condition | String | Categorical severity of traffic ranging from Free Flow to Gridlock. |
+| Weather_Condition | String | Categorical weather state such as Clear or Heavy Downpour. |
+| User_Device_OS | String | The operating system of the commuter device. |
+| Device_Model_Tier | String | Classification of the phone as Premium Mid Range or Budget. |
+| Battery_Level_Pct | Integer | The battery percentage remaining on the device at the time of the query. |
+| App_Open_Count_Last_1hr | Integer | Frequency of app refreshes simulating user desperation and panic. |
+| User_Account_Tenure_Months | Integer | The age of the commuter account. |
+| Historical_Acceptance_Rate | Float | The statistical probability this specific user accepts high surge prices. |
+| Legal_Meter_Fare_INR | Float | The honest baseline cost calculated using local transport guidelines. |
+| Surge_Multiplier_Applied | Float | The algorithmic markup applied based on behavioral and physical triggers. |
+| App_Quoted_Fare_INR | Float | The final extortionate price presented to the user on their screen. |
+| Competitor_Price_Diff_INR | Float | The simulated price difference compared to rival mobility applications. |
+| Final_Ride_Status | String | The simulated market outcome indicating if the ride was accepted or abandoned. |
+
